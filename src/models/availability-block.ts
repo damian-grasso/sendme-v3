@@ -1,5 +1,7 @@
 export interface AvailabilityBlock {
-    date: string;
+    day: string;
     startTime: string;
     endTime: string;
+    response: "Yes" | "Maybe" | "No";
+    note: string;
 }

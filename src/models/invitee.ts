@@ -19,6 +19,7 @@ export interface CreateInvitee {
 }
 
 export interface UpdateInvitee {
+    id: string;
     status?: string;
     availabilityBlocks?: AvailabilityBlock[];
     dateResponded?: Date

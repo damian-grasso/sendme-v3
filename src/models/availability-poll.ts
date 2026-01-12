@@ -14,6 +14,7 @@ export interface CreateAvailabilityPoll {
 }
 
 export interface UpdateAvailabilityPoll {
+    id: string;
     title?: string;
     collectionType?: "date_range" | "dates";
     status?: string;
