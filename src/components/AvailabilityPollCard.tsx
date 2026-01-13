@@ -8,19 +8,16 @@ type AvailabilityPollCardProps = {
 
 const AvailabilityPollCard = ({ poll }: AvailabilityPollCardProps) => {  
 
-    function getFormattedDate(date: string): string {
-        const dateObject = new Date(date);
-
-        return dateObject.toLocaleDateString("en-AU", {
+    function getFormattedDate(date: Date): string {
+        return date.toLocaleDateString("en-AU", {
             day: "numeric",
             month: "short",
             year: "numeric"
         });
     }
 
-    function pollClosed(endDate: string): boolean {
-        const endDateObject = addDays(new Date(), 1);
-
+    function pollClosed(endDate: Date): boolean {
+        const endDateObject = addDays(endDate, 1);
         return Date.now() > endDateObject.getTime();
     }
 
@@ -40,10 +37,14 @@ const AvailabilityPollCard = ({ poll }: AvailabilityPollCardProps) => {
                     </h4>
                 </Card.Title>
                 <Card.Text>
-                {
-                    (poll.collectionType === "date_range") &&
-                        <p>{getFormattedDate(poll.startDate)} to {getFormattedDate(poll.endDate)}</p>
-                }
+                <p>
+                    { 
+                        (poll.status == "published") ? `${getFormattedDate(poll.pollStartDate.toDate())} to ` : `Ends `
+                    }
+                    {
+                        getFormattedDate(poll.pollEndDate.toDate())
+                    }
+                </p>
                 <hr/>
                 {
                     (poll.status == "draft") &&
@@ -53,11 +54,11 @@ const AvailabilityPollCard = ({ poll }: AvailabilityPollCardProps) => {
                         </>
                 }
                 {
-                    (poll.status == "published" && pollClosed(poll.endDate)) &&
+                    (poll.status == "published" && pollClosed(poll.pollEndDate.toDate())) &&
                         <Button variant="primary">View Responses</Button>
                 }
                 {
-                    (poll.status == "published" && !pollClosed(poll.endDate)) &&
+                    (poll.status == "published" && !pollClosed(poll.pollEndDate.toDate())) &&
                         <>
                             <Button variant="primary">View Responses</Button>&nbsp;&nbsp;
                             <Button variant="primary">Remind</Button>
