@@ -3,11 +3,14 @@ import { getAvailabilityPollsByAccount } from "../services/availability-poll-ser
 import type { AvailabilityPoll } from "../models/availability-poll";
 import AvailabilityPollCard from "../components/AvailabilityPollCard";
 import AddAvailabilityPollModal from "../components/AddAvailabilityPollCardModal";
+import { getInviteesByAvailabilityPollIds } from "../services/invitee-service";
+import type { Invitee } from "../models/invitee";
 
 const AvailabilityPollPage = () => {
 
     const [chosenAvailabilityPoll, setChosenAvailabilityPoll] = useState({} as AvailabilityPoll | null);
     const [availabilityPolls, setAvailabilityPolls] = useState(null as AvailabilityPoll[] | null);
+    const [invitees, setInvitees] = useState(null as Invitee[] | null);
 
     const [showModal, setShowModal] = useState(true);
 
@@ -24,9 +27,28 @@ const AvailabilityPollPage = () => {
             setAvailabilityPolls(availabilityPolls);
     }
 
+    const fetchAvailabilityPollInvitees = async (availabilityPollIds: string[]) => {
+        const invitees = await getInviteesByAvailabilityPollIds(availabilityPollIds);
+        
+        console.log("INVITEES")
+        console.log(invitees)
+
+        if (invitees.length > 0)
+            setInvitees(invitees);
+    }    
+
     useEffect(() => {
         fetchAvailabilityPolls();
     }, []);
+
+    useEffect(() => {
+        if (availabilityPolls != null && availabilityPolls?.length > 0) {
+            const pollIds = availabilityPolls?.map((poll: AvailabilityPoll) => { return poll.id });
+
+            if (pollIds)
+                fetchAvailabilityPollInvitees(pollIds)
+        }
+    }, [availabilityPolls]);
 
     return (
         <>

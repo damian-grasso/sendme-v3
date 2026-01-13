@@ -74,6 +74,32 @@ export async function deleteInvitee(id: string): Promise <boolean | null> {
   }
 }
 
+export async function getInviteesByAvailabilityPollIds(availabilityPollIds: string[]): Promise <Invitee[]> {
+
+  try {
+    console.log(`Attempting to retrieve Invitees for Availability Polls...`);
+
+    let invitees: Invitee[] = [] as Invitee[];
+
+    const q = query(
+      collection(db, INVITEES_COLLECTION_NAME),
+      where("availabilityPollId", "in", availabilityPollIds)
+    );
+    const snapshot: any = await getDocs(q);
+
+    snapshot.forEach((doc: any) => {
+        invitees.push({ id: doc.id, ...doc.data() } as Invitee);
+    });
+      
+    return invitees;
+  }
+
+  catch (error) {
+    console.error(error);
+    return [] as Invitee[];
+  }
+}
+
 export async function getInviteesByAvailabilityPoll(availabilityPollId: string): Promise <Invitee[]> {
 
   try {

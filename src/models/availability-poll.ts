@@ -7,6 +7,7 @@ export interface AvailabilityPoll {
     startDate: string;
     endDate: string;
     status: string;
+    reminderSent: boolean;
 }
 
 export interface CreateAvailabilityPoll {
@@ -15,6 +16,7 @@ export interface CreateAvailabilityPoll {
     startDate: string;
     endDate: string;
     status: string;
+    reminderSent: boolean;
 }
 
 export interface UpdateAvailabilityPoll {
@@ -24,4 +26,5 @@ export interface UpdateAvailabilityPoll {
     startDate?: string;
     endDate?: string;
     status?: string;
+    reminderSent?: boolean;
 }
