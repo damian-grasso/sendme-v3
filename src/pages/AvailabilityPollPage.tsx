@@ -9,10 +9,10 @@ import type { Invitee } from "../models/invitee";
 const AvailabilityPollPage = () => {
 
     const [chosenAvailabilityPoll, setChosenAvailabilityPoll] = useState({} as AvailabilityPoll | null);
-    const [availabilityPolls, setAvailabilityPolls] = useState(null as AvailabilityPoll[] | null);
-    const [invitees, setInvitees] = useState(null as Invitee[] | null);
+    const [availabilityPolls, setAvailabilityPolls] = useState([] as AvailabilityPoll[] | null);
+    const [invitees, setInvitees] = useState([] as Invitee[]);
 
-    const [showModal, setShowModal] = useState(true);
+    const [showModal, setShowModal] = useState(false);
 
     const handleClose = async () => {
         setShowModal(false);
@@ -67,6 +67,7 @@ const AvailabilityPollPage = () => {
                 availabilityPolls?.map((poll: AvailabilityPoll) => {
                     return <AvailabilityPollCard 
                                 key={poll.id}
+                                invitees={invitees}
                                 poll={poll || []} />
                 })
             }

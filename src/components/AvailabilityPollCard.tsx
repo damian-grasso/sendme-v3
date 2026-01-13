@@ -1,13 +1,17 @@
 import { Badge, Button, Card } from "react-bootstrap";
 import type { AvailabilityPoll } from "../models/availability-poll";
 import { addDays } from "date-fns"
+import type { Invitee } from "../models/invitee";
 
 type AvailabilityPollCardProps = {
-    poll: AvailabilityPoll
+    poll: AvailabilityPoll,
+    invitees: Invitee[]
 }
 
-const AvailabilityPollCard = ({ poll }: AvailabilityPollCardProps) => {  
+const AvailabilityPollCard = ({ poll, invitees }: AvailabilityPollCardProps) => {  
 
+    const inviteesResponded = invitees?.filter((invitee: Invitee) => invitee.dateResponded != undefined).length; 
+    
     function getFormattedDate(date: Date): string {
         return date.toLocaleDateString("en-AU", {
             day: "numeric",
@@ -38,11 +42,17 @@ const AvailabilityPollCard = ({ poll }: AvailabilityPollCardProps) => {
                 </Card.Title>
                 <Card.Text>
                 <p>
-                    { 
-                        (poll.status == "published") ? `${getFormattedDate(poll.pollStartDate.toDate())} to ` : `Ends `
+                    { (poll.status == "published") ? `${getFormattedDate(poll.pollStartDate.toDate())} to ` : `Ends ` }
+                    { getFormattedDate(poll.pollEndDate.toDate()) }
+                </p>
+                <p>
+                    {
+                        (poll.status == "draft") && 
+                            `${invitees.length} invitees`
                     }
                     {
-                        getFormattedDate(poll.pollEndDate.toDate())
+                        (poll.status == "published" && invitees && invitees?.length > 0) && 
+                            `Response Rate: ${ Number(inviteesResponded / invitees.length * 100).toFixed(1) }% responded (${inviteesResponded}/${invitees.length})`
                     }
                 </p>
                 <hr/>

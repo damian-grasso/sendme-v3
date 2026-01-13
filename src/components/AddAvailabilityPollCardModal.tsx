@@ -5,7 +5,7 @@ import type { AvailabilityPoll } from "../models/availability-poll";
 type AvailabilityPollCardProps = {
     showModal: boolean,
     handleClose: any,
-    chosenAvailabilityPoll: AvailabilityPoll | null,
+    chosenAvailabilityPoll: AvailabilityPoll | null
 }
 
 const AddAvailabilityPollModal = ({ showModal, chosenAvailabilityPoll, handleClose }: AvailabilityPollCardProps) => {  

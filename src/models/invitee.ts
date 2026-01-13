@@ -1,3 +1,4 @@
+import type { Timestamp } from "firebase/firestore";
 import type { AvailabilityBlock } from "./availability-block";
 
 // To Do: Add Account ID
@@ -8,7 +9,7 @@ export interface Invitee {
     email: string;
     status: string;
     availabilityBlocks: AvailabilityBlock[];
-    dateResponded?: string
+    dateResponded?: Timestamp
 }
 
 export interface CreateInvitee {
@@ -22,5 +23,5 @@ export interface UpdateInvitee {
     id: string;
     status?: string;
     availabilityBlocks?: AvailabilityBlock[];
-    dateResponded?: Date
+    dateResponded?: Timestamp
 }
