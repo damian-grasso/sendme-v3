@@ -5,10 +5,12 @@ import type { Invitee } from "../models/invitee";
 
 type AvailabilityPollCardProps = {
     poll: AvailabilityPoll,
-    invitees: Invitee[]
+    invitees: Invitee[],
+    setChosenAvailabilityPoll: any,
+    setShowModal: any
 }
 
-const AvailabilityPollCard = ({ poll, invitees }: AvailabilityPollCardProps) => {  
+const AvailabilityPollCard = ({ poll, invitees, setChosenAvailabilityPoll, setShowModal }: AvailabilityPollCardProps) => {  
 
     const inviteesResponded = invitees?.filter((invitee: Invitee) => invitee.dateResponded != undefined).length; 
     
@@ -59,7 +61,10 @@ const AvailabilityPollCard = ({ poll, invitees }: AvailabilityPollCardProps) => 
                 {
                     (poll.status == "draft") &&
                         <>
-                            <Button variant="primary">Edit</Button>&nbsp;&nbsp;
+                            <Button variant="primary" onClick={ () => { 
+                                setShowModal(true)
+                                setChosenAvailabilityPoll(poll) 
+                            }}>Edit</Button>&nbsp;&nbsp;
                             <Button variant="success">Publish</Button>
                         </>
                 }

@@ -5,6 +5,7 @@ import AvailabilityPollCard from "../components/AvailabilityPollCard";
 import AddAvailabilityPollModal from "../components/AddAvailabilityPollCardModal";
 import { getInviteesByAvailabilityPollIds } from "../services/invitee-service";
 import type { Invitee } from "../models/invitee";
+import { Button } from "react-bootstrap";
 
 const AvailabilityPollPage = () => {
 
@@ -54,13 +55,17 @@ const AvailabilityPollPage = () => {
         <>
 
             <h1>Availability Polls</h1>
+            <Button variant="success" onClick={ () => setShowModal(true) }>
+                + Add Availability Poll
+            </Button>
             <hr/>
             {
                 (showModal) &&
                     <AddAvailabilityPollModal
                         chosenAvailabilityPoll={chosenAvailabilityPoll}
                         handleClose={handleClose}
-                        showModal={showModal} />
+                        showModal={showModal}
+                        setChosenAvailabilityPoll={setChosenAvailabilityPoll} />
             }
             <div>
             {
@@ -68,7 +73,9 @@ const AvailabilityPollPage = () => {
                     return <AvailabilityPollCard 
                                 key={poll.id}
                                 invitees={invitees}
-                                poll={poll || []} />
+                                poll={poll || []}
+                                setShowModal={setShowModal}
+                                setChosenAvailabilityPoll={setChosenAvailabilityPoll} />
                 })
             }
             </div>
