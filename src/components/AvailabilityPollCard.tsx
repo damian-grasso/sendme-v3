@@ -44,7 +44,7 @@ const AvailabilityPollCard = ({ poll, invitees, setChosenAvailabilityPoll, setSh
                 </Card.Title>
                 <Card.Text>
                 <p>
-                    { (poll.status == "published") ? `${getFormattedDate(poll.pollStartDate.toDate())} to ` : `Ends ` }
+                    { (poll.status == "published" && poll.pollStartDate) ? `${getFormattedDate(poll.pollStartDate.toDate())} to ` : `Ends ` }
                     { getFormattedDate(poll.pollEndDate.toDate()) }
                 </p>
                 <p>
@@ -61,11 +61,11 @@ const AvailabilityPollCard = ({ poll, invitees, setChosenAvailabilityPoll, setSh
                 {
                     (poll.status == "draft") &&
                         <>
+                            <Button variant="success">Publish</Button>&nbsp;&nbsp;
                             <Button variant="primary" onClick={ () => { 
                                 setShowModal(true)
                                 setChosenAvailabilityPoll(poll) 
-                            }}>Edit</Button>&nbsp;&nbsp;
-                            <Button variant="success">Publish</Button>
+                            }}>Edit</Button>
                         </>
                 }
                 {

@@ -153,8 +153,8 @@ const AddAvailabilityPollModal = ({ showModal, chosenAvailabilityPoll, setChosen
                     </Row>
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button variant="primary" type="submit">{ (chosenAvailabilityPoll == null) ? "Add" : "Update" } </Button>
-                    <Button variant="primary" onClick={() => {
+                    <Button variant="primary" type="submit">Save</Button>
+                    <Button variant="secondary" onClick={() => {
                         reset();
                         setChosenAvailabilityPoll(null);
                         handleClose(false);
