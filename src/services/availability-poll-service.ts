@@ -73,9 +73,7 @@ export async function updateAvailabilityPoll(data: UpdateAvailabilityPoll): Prom
   try {
     const { id, ...updatedFields } = data;
     
-    await updateDoc(doc(db, AVAILABILITY_POLLS_COLLECTION_NAME, id), {
-        updatedFields
-    });
+    await updateDoc(doc(db, AVAILABILITY_POLLS_COLLECTION_NAME, id), updatedFields);
 
     return true;
   }
