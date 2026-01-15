@@ -9,10 +9,12 @@ type AvailabilityPollCardProps = {
     invitees: Invitee[],
     setChosenAvailabilityPoll: any,
     setAvailabilityPolls: any,
-    setShowModal: any
+    setShowModal: any, 
+    setShowToast: any,
+    setNotificationMessage: any
 }
 
-const AvailabilityPollCard = ({ poll, invitees, setChosenAvailabilityPoll, setAvailabilityPolls, setShowModal }: AvailabilityPollCardProps) => {  
+const AvailabilityPollCard = ({ poll, invitees, setChosenAvailabilityPoll, setAvailabilityPolls, setShowModal, setShowToast, setNotificationMessage }: AvailabilityPollCardProps) => {  
 
     const inviteesResponded = invitees?.filter((invitee: Invitee) => invitee.dateResponded != undefined).length;
 
@@ -26,6 +28,8 @@ const AvailabilityPollCard = ({ poll, invitees, setChosenAvailabilityPoll, setAv
     const copyLink = async () => {
         try {
           await navigator.clipboard.writeText(`${window.location.origin}/${poll.id}/respond/${poll.link}`);
+          setNotificationMessage("Link has been copied!");
+          setShowToast(true);
         } catch (err) {
           console.error("Failed to copy", err);
         }
@@ -58,6 +62,9 @@ const AvailabilityPollCard = ({ poll, invitees, setChosenAvailabilityPoll, setAv
             );
 
             await navigator.clipboard.writeText(`${window.location.origin}/${poll.id}/respond/${poll.link}`);
+
+            setNotificationMessage("Poll has been published, and the link has been copied!");
+            setShowToast(true);
         } catch (err) {
           console.error("Failed to copy", err);
         }
@@ -78,7 +85,6 @@ const AvailabilityPollCard = ({ poll, invitees, setChosenAvailabilityPoll, setAv
                             style={{ fontSize: "0.75rem" }}>
                             {poll.status}
                             </Badge>
-
                     </h4>
                     </div>
 

@@ -5,7 +5,7 @@ import AvailabilityPollCard from "../components/AvailabilityPollCard";
 import AddAvailabilityPollModal from "../components/AddAvailabilityPollCardModal";
 import { getInviteesByAvailabilityPollIds } from "../services/invitee-service";
 import type { Invitee } from "../models/invitee";
-import { Button } from "react-bootstrap";
+import { Button, Toast, ToastContainer } from "react-bootstrap";
 import { FaPlus } from "react-icons/fa";
 
 const AvailabilityPollPage = () => {
@@ -13,6 +13,9 @@ const AvailabilityPollPage = () => {
     const [chosenAvailabilityPoll, setChosenAvailabilityPoll] = useState({} as AvailabilityPoll | null);
     const [availabilityPolls, setAvailabilityPolls] = useState([] as AvailabilityPoll[] | null);
     const [invitees, setInvitees] = useState([] as Invitee[]);
+
+    const [showToast, setShowToast] = useState(false);
+    const [notificationMessage, setNotificationMessage] = useState("");
 
     const [showModal, setShowModal] = useState(false);
 
@@ -70,7 +73,7 @@ const AvailabilityPollPage = () => {
                         setChosenAvailabilityPoll={setChosenAvailabilityPoll}
                         setAvailabilityPolls={setAvailabilityPolls} />
             }
-            <div>
+        
             {
                 availabilityPolls?.map((poll: AvailabilityPoll) => {
                     return <AvailabilityPollCard 
@@ -79,10 +82,22 @@ const AvailabilityPollPage = () => {
                                 poll={poll || []}
                                 setShowModal={setShowModal}
                                 setChosenAvailabilityPoll={setChosenAvailabilityPoll}
-                                setAvailabilityPolls={setAvailabilityPolls} />
+                                setAvailabilityPolls={setAvailabilityPolls}
+                                setShowToast={setShowToast}
+                                setNotificationMessage={setNotificationMessage} />
                 })
             }
-            </div>
+            <ToastContainer
+                position="bottom-end"
+                className="p-3"
+                style={{ zIndex: 1055 }}>
+                <Toast show={showToast} bg="success" delay={2000} onClose={ () => setShowToast(false) } autohide>
+                    <Toast.Body className="text-white d-flex align-items-center">
+                    <i className="bi bi-check-circle me-2" />
+                    {notificationMessage}
+                    </Toast.Body>
+                </Toast>
+            </ToastContainer>
         </>
     );
 };
