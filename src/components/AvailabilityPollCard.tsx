@@ -84,7 +84,7 @@ const AvailabilityPollCard = ({ poll, invitees, setChosenAvailabilityPoll, setAv
                             className="ms-2 align-middle fw-normal"
                             style={{ fontSize: "0.75rem" }}>
                             {poll.status}
-                            </Badge>
+                        </Badge>
                     </h4>
                     </div>
 

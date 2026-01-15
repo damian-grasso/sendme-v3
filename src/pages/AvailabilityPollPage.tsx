@@ -93,8 +93,8 @@ const AvailabilityPollPage = () => {
                 style={{ zIndex: 1055 }}>
                 <Toast show={showToast} bg="success" delay={2000} onClose={ () => setShowToast(false) } autohide>
                     <Toast.Body className="text-white d-flex align-items-center">
-                    <i className="bi bi-check-circle me-2" />
-                    {notificationMessage}
+                        <i className="bi bi-check-circle me-2" />
+                        {notificationMessage}
                     </Toast.Body>
                 </Toast>
             </ToastContainer>
