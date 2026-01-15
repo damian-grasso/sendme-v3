@@ -71,7 +71,14 @@ const AvailabilityPollCard = ({ poll, invitees, setChosenAvailabilityPoll, setAv
                     <div className="d-flex align-items-center gap-2">
                     <h4 className="mb-0">
                         {poll.title}{" "}
-                        <Badge bg={getBadgeColour(poll.status)}>{poll.status}</Badge>
+                        <Badge
+                            bg={getBadgeColour(poll.status)}
+                            pill
+                            className="ms-2 align-middle fw-normal"
+                            style={{ fontSize: "0.75rem" }}>
+                            {poll.status}
+                            </Badge>
+
                     </h4>
                     </div>
 
