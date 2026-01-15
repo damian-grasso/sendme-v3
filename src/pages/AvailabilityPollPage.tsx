@@ -6,6 +6,7 @@ import AddAvailabilityPollModal from "../components/AddAvailabilityPollCardModal
 import { getInviteesByAvailabilityPollIds } from "../services/invitee-service";
 import type { Invitee } from "../models/invitee";
 import { Button } from "react-bootstrap";
+import { FaPlus } from "react-icons/fa";
 
 const AvailabilityPollPage = () => {
 
@@ -56,7 +57,8 @@ const AvailabilityPollPage = () => {
 
             <h1>Availability Polls</h1>
             <Button variant="success" onClick={ () => setShowModal(true) }>
-                + Add Availability Poll
+                <FaPlus className="me-2" />
+                Add Availability Poll
             </Button>
             <hr/>
             {
@@ -65,7 +67,8 @@ const AvailabilityPollPage = () => {
                         chosenAvailabilityPoll={chosenAvailabilityPoll}
                         handleClose={handleClose}
                         showModal={showModal}
-                        setChosenAvailabilityPoll={setChosenAvailabilityPoll} />
+                        setChosenAvailabilityPoll={setChosenAvailabilityPoll}
+                        setAvailabilityPolls={setAvailabilityPolls} />
             }
             <div>
             {
@@ -75,7 +78,8 @@ const AvailabilityPollPage = () => {
                                 invitees={invitees}
                                 poll={poll || []}
                                 setShowModal={setShowModal}
-                                setChosenAvailabilityPoll={setChosenAvailabilityPoll} />
+                                setChosenAvailabilityPoll={setChosenAvailabilityPoll}
+                                setAvailabilityPolls={setAvailabilityPolls} />
                 })
             }
             </div>

@@ -1,168 +1,248 @@
+import { useEffect, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { Button, Col, Form, Modal, Row, Stack } from "react-bootstrap";
-import type { AvailabilityPoll, CreateAvailabilityPoll, UpdateAvailabilityPoll } from "../models/availability-poll";
-import { useEffect } from "react";
+import type {
+  AvailabilityPoll,
+  CreateAvailabilityPoll,
+  UpdateAvailabilityPoll,
+} from "../models/availability-poll";
 import { Timestamp, serverTimestamp } from "firebase/firestore";
-import { createAvailabilityPoll, updateAvailabilityPoll } from "../services/availability-poll-service";
+import {
+  createAvailabilityPoll,
+  updateAvailabilityPoll,
+} from "../services/availability-poll-service";
+import { FaSave } from "react-icons/fa";
 
 type AvailabilityPollCardProps = {
-    showModal: boolean,
-    handleClose: any,
-    chosenAvailabilityPoll: AvailabilityPoll | null,
-    setChosenAvailabilityPoll: any
+  showModal: boolean;
+  handleClose: (didSave: boolean) => void;
+  chosenAvailabilityPoll: AvailabilityPoll | null;
+  setChosenAvailabilityPoll: any;
+  setAvailabilityPolls: any;
+};
+
+type AvailabilityPollFormInputs = {
+  title: string;
+  startDate: string;   // yyyy-mm-dd
+  endDate: string;     // yyyy-mm-dd
+};
+
+function toDateInput(ts?: Timestamp | null): string {
+  if (!ts) return "";
+  const d = ts.toDate();
+  const yyyy = d.getFullYear();
+  const mm = String(d.getMonth() + 1).padStart(2, "0");
+  const dd = String(d.getDate()).padStart(2, "0");
+  return `${yyyy}-${mm}-${dd}`;
 }
 
-const AddAvailabilityPollModal = ({ showModal, chosenAvailabilityPoll, setChosenAvailabilityPoll, handleClose }: AvailabilityPollCardProps) => {  
+function fromDateInput(dateStr: string): Timestamp {
+  const [year, month, day] = dateStr.split("-").map(Number);
+  return Timestamp.fromDate(new Date(year, month - 1, day, 0, 0, 0));
+}
 
-    console.log(chosenAvailabilityPoll)
+const AddAvailabilityPollModal = ({
+  showModal,
+  chosenAvailabilityPoll,
+  setChosenAvailabilityPoll,
+  setAvailabilityPolls,
+  handleClose
+}: AvailabilityPollCardProps) => {
+  const defaultValues: AvailabilityPollFormInputs = useMemo(
+    () => ({
+      title: "",
+      startDate: "",
+      endDate: ""
+    }),
+    []
+  );
 
-    type AvailabilityPollFormInputs = {
-        title: string,
-        startDate: string,
-        endDate: string,
-        pollEndDate: string
-    };
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+    reset,
+  } = useForm<AvailabilityPollFormInputs>({ defaultValues });
 
-    const { register, handleSubmit, formState: { errors }, reset, watch } = useForm<AvailabilityPollFormInputs>();
+  useEffect(() => {
+    if (!showModal) return;
 
-    let values = null;
-
-    const defaultValues = {
-        title: "",
-        startDate: "",
-        endDate: "",
-        pollEndDate: ""
-    };
-
-    function getFormattedDate(dateStr: string): Timestamp {
-        const [year, month, day] = dateStr.split("-").map(Number);
-        const localDate = new Date(year, month - 1, day);
-        return Timestamp.fromDate(localDate);
+    if (!chosenAvailabilityPoll) {
+      reset(defaultValues);
+      return;
     }
 
-    const onSubmit = async (form: AvailabilityPollFormInputs) => {
+    reset({
+      title: chosenAvailabilityPoll.title || "",
+      startDate: toDateInput(chosenAvailabilityPoll.startDate),
+      endDate: toDateInput(chosenAvailabilityPoll.endDate)
+    });
+  }, [showModal, chosenAvailabilityPoll?.id, reset, defaultValues]);
 
-        if (chosenAvailabilityPoll) {
-            try {
-                const updateAvailabilityPollData = {
-                    id: chosenAvailabilityPoll.id,
-                    title: form.title,
-                    startDate: getFormattedDate(form.startDate),
-                    endDate: getFormattedDate(form.endDate),
-                    pollEndDate: getFormattedDate(form.pollEndDate),
-                    status: chosenAvailabilityPoll.status,
-                    reminderSent: false
-                } as UpdateAvailabilityPoll;
-    
-                await updateAvailabilityPoll(updateAvailabilityPollData)
+  const closeWithoutSave = () => {
+    reset(defaultValues);
+    setChosenAvailabilityPoll(null);
+    handleClose(false);
+  };
 
-                // then update state...
-            }
+  const onSubmit = async (form: AvailabilityPollFormInputs) => {
+    try {
+      const startDateTs = fromDateInput(form.startDate);
+      const endDateTs = fromDateInput(form.endDate);
 
-            catch (error) {
-                console.error(error);
-            }
-        }
+      if (chosenAvailabilityPoll) {
 
-        else {
-            try {
-                const createAvailabilityPollData = {
-                    title: form.title,
-                    pollEndDate: getFormattedDate(form.pollEndDate),
-                    startDate: getFormattedDate(form.startDate),
-                    endDate: getFormattedDate(form.endDate),
-                    status: "draft",
-                    reminderSent: false,
-                    createdAt: serverTimestamp()
-                } as CreateAvailabilityPoll;
-    
-                await createAvailabilityPoll(createAvailabilityPollData);
+        const payload: UpdateAvailabilityPoll = {
+          id: chosenAvailabilityPoll.id,
+          title: form.title,
+          startDate: startDateTs,
+          endDate: endDateTs,
+          status: chosenAvailabilityPoll.status
+        };
 
-                handleClose(true);
+        await updateAvailabilityPoll(payload);
 
-                // then update state...
-            }
+        // Update parent list
+        setAvailabilityPolls((prev: any) =>
+          prev.map((p: any) =>
+            p.id === chosenAvailabilityPoll.id
+              ? {
+                  ...p,
+                  title: payload.title,
+                  startDate: payload.startDate,
+                  endDate: payload.endDate,
+                  status: payload.status,
+                }
+              : p
+          )
+        );
 
-            catch (error) {
-                console.error(error);
-            }
-        }
+        setChosenAvailabilityPoll(
+            chosenAvailabilityPoll
+              ? {
+                  ...chosenAvailabilityPoll,
+                  title: payload.title,
+                  startDate: payload.startDate,
+                  endDate: payload.endDate,
+                  status: payload.status,
+                }
+              : null
+          );
+        
+        setChosenAvailabilityPoll(null);
+        reset(defaultValues);
+        handleClose(true);
+        return;
+      }
+
+      // CREATE
+      const payload: CreateAvailabilityPoll = {
+        title: form.title,
+        startDate: startDateTs,
+        endDate: endDateTs,
+        status: "draft",
+        link: crypto.randomUUID().slice(0, 7),
+        createdAt: Timestamp.now(),
+      };
+
+      // Ideally returns new doc id
+      const poll = await createAvailabilityPoll(payload);
+
+      if (poll) {
+        // Optimistic poll for UI
+        const optimisticPoll: AvailabilityPoll = {
+          id: poll.id,
+          title: payload.title,
+          startDate: payload.startDate,
+          endDate: payload.endDate,
+          status: payload.status,
+          link: payload.link,
+          createdAt: Timestamp.now()
+        };
+
+        setAvailabilityPolls((prev) => [optimisticPoll, ...prev]);
+        setChosenAvailabilityPoll(null);
+        handleClose(true);
+      }
+
+      else
+        throw new Error("An error occurred");
+    } catch (error) {
+      console.error(error);
+      // optionally show toast / inline error
     }
+  };
 
-    useEffect(() => {
-        values = (chosenAvailabilityPoll == null) ?
-            defaultValues : 
-            {
-                title: chosenAvailabilityPoll.title,
-                startDate: chosenAvailabilityPoll.startDate.toDate().toISOString().slice(0, 10),
-                endDate: chosenAvailabilityPoll.endDate.toDate().toISOString().slice(0, 10),
-                pollEndDate: chosenAvailabilityPoll.pollEndDate.toDate().toISOString().slice(0, 10)
-            };
+  return (
+    <Modal show={showModal} onHide={closeWithoutSave} backdrop="static" keyboard={false}>
+      <Modal.Header closeButton>
+        <Modal.Title>{chosenAvailabilityPoll ? "Update Poll" : "Add Poll"}</Modal.Title>
+      </Modal.Header>
 
-        reset(values);
-    }, [chosenAvailabilityPoll, reset]);
+      <Form onSubmit={handleSubmit(onSubmit)}>
+        <Modal.Body>
+          <Row>
+            <Form.Group as={Col} className="mb-4">
+              <Form.Label htmlFor="title">
+                <b>Poll Title</b>
+              </Form.Label>
+              <Form.Control
+                {...register("title", { required: "Please enter a title" })}
+                type="text"
+                id="title"
+              />
+              {errors.title && (
+                <div role="alert" className="mt-2 text-danger">
+                  {errors.title.message}
+                </div>
+              )}
+            </Form.Group>
+          </Row>
 
-    return (
-        <Modal show={showModal} 
-            key={chosenAvailabilityPoll ? chosenAvailabilityPoll.id : "new-fixture"}
-            onHide={() => {
-                reset();
-                handleClose(false);
-            }}>
-            <Modal.Header closeButton>
-                <Modal.Title>{ (chosenAvailabilityPoll == null) ? "Add Poll" : "Update Poll" }</Modal.Title>
-            </Modal.Header>
-            <Form onSubmit={ handleSubmit(onSubmit) }>
-                <Modal.Body>
-                    <Row>
-                        <Form.Group as={Col} className="mb-1">
-                            <Form.Label htmlFor="title"><b>Title</b></Form.Label>
-                            <Form.Control
-                                { ...register("title", { required: "Please enter a title" }) }
-                                type="text"
-                                id="title"
-                                aria-describedby="title" />
-                            { errors.title && <p role="alert" style={{ color: "red", marginTop: "10px" }}>{errors.title.message}</p> }
-                        </Form.Group>
-                    </Row>
-                    <Form.Group className="mb-4">
-                        <Form.Label><b>Dates To Poll</b></Form.Label>
+          <h5 className="mb-2" style={{ textAlign: "center" }}>Date Range To Poll</h5>
 
-                        <Stack direction="horizontal" gap={2}>
-                            <Form.Control
-                                {...register("startDate", { required: "Start Date is missing" })}
-                                type="date" />
-                            <span>to</span>
-                            <Form.Control
-                                {...register("endDate", { required: "End Date is missing" })}
-                                type="date" />
-                        </Stack>
-                        { (errors.startDate) && <p role="alert" className="mt-1 mb-1" style={{ color: "red" }}>{errors.startDate?.message}</p> }
-                        { (errors.endDate) && <p role="alert" className="mt-1 mb-1" style={{ color: "red" }}>{errors.endDate?.message}</p> }
-                    </Form.Group>
-                    <Row>
-                        <Form.Group as={Col} xs={6} className="mb-4">
-                            <Form.Label htmlFor="pollEndDate"><b>Poll End Date</b></Form.Label>
-                            <Form.Control
-                                { ...register("pollEndDate", { required: "Poll End Date is missing" }) }
-                                type="date"
-                                id="pollEndDate"
-                                aria-describedby="pollEndDate" />
-                            { (errors.pollEndDate) && <p role="alert" className="mt-1 mb-1" style={{ color: "red" }}>{errors.pollEndDate?.message}</p> }
-                        </Form.Group>
-                    </Row>
-                </Modal.Body>
-                <Modal.Footer>
-                    <Button variant="primary" type="submit">Save</Button>
-                    <Button variant="secondary" onClick={() => {
-                        reset();
-                        setChosenAvailabilityPoll(null);
-                        handleClose(false);
-                    }}>Cancel</Button>
-                </Modal.Footer>
-            </Form>
-        </Modal>
-    );
+          <Form.Group className="mb-3">
+            <Form.Label>
+              <b>Start Date</b>
+            </Form.Label>
+            <Form.Control
+              {...register("startDate", { required: "Start Date is missing" })}
+              type="date" />
+            
+            {errors.startDate && (
+              <div role="alert" className="mt-2 text-danger">
+                {errors.startDate.message}
+              </div>
+            )}
+          </Form.Group>
+          <Form.Group className="mb-3">
+            <Form.Label>
+              <b>End Date</b>
+            </Form.Label>
+            <Form.Control
+              {...register("endDate", { required: "End Date is missing" })}
+              type="date" />
+
+            {errors.endDate && (
+              <div role="alert" className="mt-1 text-danger">
+                {errors.endDate.message}
+              </div>
+            )}
+          </Form.Group>
+        </Modal.Body>
+
+        <Modal.Footer>
+          <Button variant="primary" type="submit" disabled={isSubmitting}>
+            <FaSave className="me-1" />
+            {isSubmitting ? "Saving..." : "Save"}
+          </Button>
+          <Button variant="secondary" type="button" onClick={closeWithoutSave}>
+            Cancel
+          </Button>
+        </Modal.Footer>
+      </Form>
+    </Modal>
+  );
 };
 
 export default AddAvailabilityPollModal;
