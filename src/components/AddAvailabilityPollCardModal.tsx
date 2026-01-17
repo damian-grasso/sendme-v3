@@ -1,12 +1,12 @@
 import { useEffect, useMemo } from "react";
 import { useForm } from "react-hook-form";
-import { Button, Col, Form, Modal, Row, Stack } from "react-bootstrap";
+import { Button, Col, Form, Modal, Row } from "react-bootstrap";
 import type {
   AvailabilityPoll,
   CreateAvailabilityPoll,
   UpdateAvailabilityPoll,
 } from "../models/availability-poll";
-import { Timestamp, serverTimestamp } from "firebase/firestore";
+import { Timestamp } from "firebase/firestore";
 import {
   createAvailabilityPoll,
   updateAvailabilityPoll,
@@ -160,7 +160,7 @@ const AddAvailabilityPollModal = ({
           createdAt: Timestamp.now()
         };
 
-        setAvailabilityPolls((prev) => [optimisticPoll, ...prev]);
+        setAvailabilityPolls((prev: any) => [optimisticPoll, ...prev]);
         setChosenAvailabilityPoll(null);
         handleClose(true);
       }
