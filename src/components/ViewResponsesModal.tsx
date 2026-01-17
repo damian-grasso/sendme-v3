@@ -8,16 +8,14 @@ type ViewResponsesModalProps = {
   chosenPoll: AvailabilityPoll | null;
   chosenInvitees: Invitee[] | null;
   setChosenPoll: any;
-  setChosenInvitees: any;
   setShowModal: any;
 };
 
-const ViewResponsesModal = ({ showModal, chosenPoll, chosenInvitees, setChosenPoll, setChosenInvitees, setShowModal }: ViewResponsesModalProps) => {
+const ViewResponsesModal = ({ showModal, chosenPoll, chosenInvitees, setChosenPoll, setShowModal }: ViewResponsesModalProps) => {
   
   function closeModal() {
     setShowModal(false);
     setChosenPoll(null);
-    setChosenInvitees(null);
   }
 
   return (
@@ -26,9 +24,23 @@ const ViewResponsesModal = ({ showModal, chosenPoll, chosenInvitees, setChosenPo
         <Modal.Title>Poll Responses</Modal.Title>
       </Modal.Header>
       <Modal.Body>
+      {
+        chosenInvitees && chosenInvitees.length > 0 &&
+        chosenInvitees.map((invitee: Invitee) => (
+          <div key={invitee.id}>
+            <p>{invitee.name}</p>
 
+            {invitee.availabilityBlocks.map((block, blockIndex) => (
+              <div key={`${invitee.id}-${blockIndex}`}>
+                <p>{block.day}</p>
+                <p>{block.startTime} - {block.endTime}</p>
+                <p>{block.note}</p>
+              </div>
+            ))}
+          </div>
+        ))
+      }
       </Modal.Body>
-
       <Modal.Footer>
         <Button variant="secondary" type="button" onClick={closeModal}>
           Close

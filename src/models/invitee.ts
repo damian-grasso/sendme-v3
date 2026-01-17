@@ -4,6 +4,7 @@ import type { AvailabilityBlock } from "./availability-block";
 export interface Invitee {
     id: string;
     availabilityPollId: string;
+    name: string;
     email?: string;
     availabilityBlocks: AvailabilityBlock[];
     dateResponded?: Timestamp
@@ -11,6 +12,7 @@ export interface Invitee {
 
 export interface CreateInvitee {
     availabilityPollId: string;
+    name: string;
     email?: string;
     availabilityBlocks?: AvailabilityBlock[];
     dateResponded: Timestamp

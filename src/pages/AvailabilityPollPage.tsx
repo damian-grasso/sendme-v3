@@ -16,11 +16,11 @@ const AvailabilityPollPage = () => {
   const [showModal, setShowModal] = useState(false);
   const [viewResponsesModal, setViewResponsesModal] = useState(false);
 
-  const [chosenPoll, setChosenPoll] = useState(null);
-  const [chosenInvitees, setChosenInvitees] = useState(null);
-
   const [polls, setPolls] = useState([] as AvailabilityPoll[]);
   const [invitees, setInvitees] = useState([] as Invitee[]);
+
+  const [chosenPoll, setChosenPoll] = useState<AvailabilityPoll | null>(null);
+  const chosenInvitees = (chosenPoll && invitees.length > 0) ? invitees.filter((invitee: Invitee) => invitee.availabilityPollId == chosenPoll.id) : [];
 
   const fetchPolls = async () => {
 
@@ -94,7 +94,6 @@ const AvailabilityPollPage = () => {
               chosenPoll={chosenPoll}
               chosenInvitees={chosenInvitees}
               setChosenPoll={setChosenPoll}
-              setChosenInvitees={setChosenInvitees}
               setShowModal={setViewResponsesModal} />
         }
         <Col md={{ span: 8, offset: 2 }} className="mt-5">
