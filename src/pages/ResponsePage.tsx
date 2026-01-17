@@ -20,7 +20,6 @@ const ResponsePage = () => {
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
-  // ---- Helpers ----
   function toDayKey(ts: Timestamp): string {
     const d = ts.toDate();
     const yyyy = d.getFullYear();
@@ -45,7 +44,6 @@ const ResponsePage = () => {
     setBlocks((prev) => prev.map((b) => (b.day === day ? { ...b, ...patch } : b)));
   };
 
-  // ---- Fetch poll ----
   useEffect(() => {
     const fetchAvailabilityPoll = async () => {
       if (!id) return;
@@ -77,7 +75,6 @@ const ResponsePage = () => {
     fetchInvitees();
   }, [id]);
 
-  // ---- Build date range from poll ----
   useEffect(() => {
     if (!availabilityPoll?.startDate || !availabilityPoll?.endDate) return;
 
@@ -86,7 +83,6 @@ const ResponsePage = () => {
     setDateRange([availabilityPoll.startDate, availabilityPoll.endDate]);
   }, [availabilityPoll]);
 
-  // ---- Build blocks from date range ----
   useEffect(() => {
     if (dateRange.length === 0) return;
 
@@ -101,7 +97,6 @@ const ResponsePage = () => {
     );
   }, [dateRange]);
 
-  // ---- Submit placeholder (you’ll wire to Firestore later) ----
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     console.log("Submitting blocks:", blocks);
