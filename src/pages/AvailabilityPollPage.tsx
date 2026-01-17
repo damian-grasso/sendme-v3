@@ -7,13 +7,20 @@ import AvailabilityPollCard from "../components/AvailabilityPollCard";
 
 import { getAvailabilityPollsByAccount } from "../services/availability-poll-service";
 import AddAvailabilityPollModal from "../components/AddAvailabilityPollCardModal";
+import ViewResponsesModal from "../components/ViewResponsesModal";
+import { getInviteesByAvailabilityPollIds } from "../services/invitee-service";
+import type { Invitee } from "../models/invitee";
 
 const AvailabilityPollPage = () => {
   
   const [showModal, setShowModal] = useState(false);
+  const [viewResponsesModal, setViewResponsesModal] = useState(false);
 
   const [chosenPoll, setChosenPoll] = useState(null);
-  const [polls, setPolls] = useState([] as AvailabilityPoll[])
+  const [chosenInvitees, setChosenInvitees] = useState(null);
+
+  const [polls, setPolls] = useState([] as AvailabilityPoll[]);
+  const [invitees, setInvitees] = useState([] as Invitee[]);
 
   const fetchPolls = async () => {
 
@@ -33,10 +40,40 @@ const AvailabilityPollPage = () => {
     }
   }
 
+  const fetchInvitees = async () => {
+
+    try {
+
+      const availabilityPollIds = polls.map(
+        (poll: AvailabilityPoll) => poll.id
+      );
+
+      console.log(availabilityPollIds)
+
+      const invitees = await getInviteesByAvailabilityPollIds(availabilityPollIds);
+
+      console.log("Invitees")
+      console.log(invitees);
+
+      if (invitees.length > 0)
+        setInvitees(invitees);
+    }
+
+    catch (error) {
+      setPolls([]);
+      console.error(error);
+    }
+  }
+
   useEffect(() => {
     
     fetchPolls();
   }, []);
+
+  useEffect(() => {
+    
+    fetchInvitees();
+  }, [polls.length > 0]);
 
   return (
     <Container>
@@ -49,6 +86,16 @@ const AvailabilityPollPage = () => {
               setShowModal={setShowModal}
               setChosenPoll={setChosenPoll} 
               setPolls={setPolls} />
+        }
+        {
+          (viewResponsesModal) &&
+            <ViewResponsesModal 
+              showModal={viewResponsesModal}  
+              chosenPoll={chosenPoll}
+              chosenInvitees={chosenInvitees}
+              setChosenPoll={setChosenPoll}
+              setChosenInvitees={setChosenInvitees}
+              setShowModal={setViewResponsesModal} />
         }
         <Col md={{ span: 8, offset: 2 }} className="mt-5">
           <h1>Availability Polls</h1>
@@ -68,12 +115,14 @@ const AvailabilityPollPage = () => {
             (polls && polls.length > 0) ?
               polls.map((poll: AvailabilityPoll) => 
                 <AvailabilityPollCard 
+                  key={poll.id}
                   poll={poll}
                   invitees={[]}
                   chosenPoll={chosenPoll}
                   setChosenPoll={setChosenPoll} 
                   setAvailabilityPolls={setPolls} 
-                  setShowModal={setShowModal} />
+                  setShowModal={setShowModal}
+                  setViewResponsesModal={setViewResponsesModal} />
               ) : 
               <h5>No polls created. Click "Add Poll" to create your first poll.</h5>
           }

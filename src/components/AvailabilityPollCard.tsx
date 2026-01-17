@@ -10,10 +10,11 @@ type AvailabilityPollCardProps = {
     chosenPoll: AvailabilityPoll | null,
     setChosenPoll: any,
     setAvailabilityPolls: any,
-    setShowModal: any
+    setShowModal: any,
+    setViewResponsesModal: any
 }
 
-const AvailabilityPollCard = ({ poll, invitees, chosenPoll, setChosenPoll, setAvailabilityPolls, setShowModal }: AvailabilityPollCardProps) => {  
+const AvailabilityPollCard = ({ poll, invitees, chosenPoll, setChosenPoll, setAvailabilityPolls, setShowModal, setViewResponsesModal }: AvailabilityPollCardProps) => {  
 
     const inviteesResponded = invitees?.filter((invitee: Invitee) => invitee.dateResponded != undefined).length;
 
@@ -142,7 +143,10 @@ const AvailabilityPollCard = ({ poll, invitees, chosenPoll, setChosenPoll, setAv
                                 <FaShareAlt className="me-2" />
                                 Copy Link
                             </Button>
-                            <Button variant="primary">
+                            <Button variant="primary" onClick={ () => { 
+                                setViewResponsesModal(true)
+                                setChosenPoll(poll) 
+                            }}>
                                 View Responses
                             </Button>
                         </>
