@@ -42,7 +42,7 @@ const AvailabilityPollCard = ({ poll, invitees, setChosenAvailabilityPoll, setAv
 
     const copyLink = async () => {
         try {
-          await navigator.clipboard.writeText(`${window.location.origin}/respond/${poll.id}`);
+          await navigator.clipboard.writeText(`${window.location.origin}/respond/${poll.id}/`);
           setNotificationMessage("Link has been copied!");
           setShowToast(true);
         } catch (err) {

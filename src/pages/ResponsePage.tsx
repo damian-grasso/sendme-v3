@@ -6,13 +6,15 @@ import { Card, Col, Form, Row, Button, Spinner } from "react-bootstrap";
 import type { AvailabilityPoll } from "../models/availability-poll";
 import type { AvailabilityBlock } from "../models/availability-block";
 import { getAvailabilityPollById } from "../services/availability-poll-service";
-import { createInvitee } from "../services/invitee-service";
-import type { CreateInvitee } from "../models/invitee";
+import { createInvitee, getInviteesByAvailabilityPoll } from "../services/invitee-service";
+import type { CreateInvitee, Invitee } from "../models/invitee";
 
 const ResponsePage = () => {
   const { id } = useParams();
 
   const [availabilityPoll, setAvailabilityPoll] = useState<AvailabilityPoll | null>(null);
+  const [invitees, setInvitees] = useState<Invitee[]>();
+  
   const [dateRange, setDateRange] = useState<Timestamp[]>([]);
   const [blocks, setBlocks] = useState<AvailabilityBlock[]>([]);
   const [loading, setLoading] = useState(false);
@@ -56,7 +58,23 @@ const ResponsePage = () => {
       }
     };
 
+    const fetchInvitees = async () => {
+      if (!id) return;
+      setLoading(true);
+      try {
+        const invitees = await getInviteesByAvailabilityPoll(id);
+
+        console.log("INVITEES")
+        console.log(invitees);
+
+        if (invitees.length > 0) setInvitees(invitees);
+      } finally {
+        setLoading(false);
+      }
+    };
+
     fetchAvailabilityPoll();
+    fetchInvitees();
   }, [id]);
 
   // ---- Build date range from poll ----
@@ -93,7 +111,8 @@ const ResponsePage = () => {
     
     const invitee = {
         availabilityPollId: availabilityPoll?.id,
-        availabilityBlocks: blocks
+        availabilityBlocks: blocks,
+        dateResponded: Timestamp.now()
     } as CreateInvitee;
 
     createInvitee(invitee);
@@ -196,8 +215,6 @@ const ResponsePage = () => {
           </Form>
             : <p>Thanks!</p>
         }
-
-      
     </>
   );
 };
