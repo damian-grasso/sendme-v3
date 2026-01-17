@@ -75,6 +75,7 @@ const AvailabilityPollPage = () => {
             }
         
             {
+                (availabilityPolls && availabilityPolls.length > 0) ? 
                 availabilityPolls?.map((poll: AvailabilityPoll) => {
                     return <AvailabilityPollCard 
                                 key={poll.id}
@@ -85,7 +86,8 @@ const AvailabilityPollPage = () => {
                                 setAvailabilityPolls={setAvailabilityPolls}
                                 setShowToast={setShowToast}
                                 setNotificationMessage={setNotificationMessage} />
-                })
+                                
+                }) : <p>No polls have been created. Create a poll by clicking "Add Availability Poll".</p>
             }
             <ToastContainer
                 position="bottom-end"

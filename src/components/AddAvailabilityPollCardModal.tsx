@@ -87,89 +87,78 @@ const AddAvailabilityPollModal = ({
 
   const onSubmit = async (form: AvailabilityPollFormInputs) => {
     try {
-      const startDateTs = fromDateInput(form.startDate);
-      const endDateTs = fromDateInput(form.endDate);
-
-      if (chosenAvailabilityPoll) {
-
+      const startDate = fromDateInput(form.startDate);
+      const endDate = fromDateInput(form.endDate);
+  
+      if (!startDate || !endDate) {
+        throw new Error("Invalid start or end date");
+      }
+  
+      // --------------------
+      // UPDATE EXISTING POLL
+      // --------------------
+      if (chosenAvailabilityPoll?.id) {
         const payload: UpdateAvailabilityPoll = {
           id: chosenAvailabilityPoll.id,
           title: form.title,
-          startDate: startDateTs,
-          endDate: endDateTs,
-          status: chosenAvailabilityPoll.status
+          startDate,
+          endDate,
+          status: chosenAvailabilityPoll.status,
         };
-
+  
         await updateAvailabilityPoll(payload);
-
-        // Update parent list
-        setAvailabilityPolls((prev: any) =>
-          prev.map((p: any) =>
-            p.id === chosenAvailabilityPoll.id
-              ? {
-                  ...p,
-                  title: payload.title,
-                  startDate: payload.startDate,
-                  endDate: payload.endDate,
-                  status: payload.status,
-                }
+  
+        setAvailabilityPolls((prev: AvailabilityPoll[]) =>
+          prev.map((p) =>
+            p.id === payload.id
+              ? { ...p, ...payload }
               : p
           )
         );
-
-        setChosenAvailabilityPoll(
-            chosenAvailabilityPoll
-              ? {
-                  ...chosenAvailabilityPoll,
-                  title: payload.title,
-                  startDate: payload.startDate,
-                  endDate: payload.endDate,
-                  status: payload.status,
-                }
-              : null
-          );
-        
+  
         setChosenAvailabilityPoll(null);
         reset(defaultValues);
         handleClose(true);
         return;
       }
-
-      // CREATE
+  
+      // --------------------
+      // CREATE NEW POLL
+      // --------------------
+      const createdAt = Timestamp.now();
+  
       const payload: CreateAvailabilityPoll = {
         title: form.title,
-        startDate: startDateTs,
-        endDate: endDateTs,
+        startDate,
+        endDate,
         status: "draft",
-        link: crypto.randomUUID().slice(0, 7),
-        createdAt: Timestamp.now(),
+        createdAt,
       };
-
-      // Ideally returns new doc id
-      const poll = await createAvailabilityPoll(payload);
-
-      if (poll) {
-        // Optimistic poll for UI
-        const optimisticPoll: AvailabilityPoll = {
-          id: poll.id,
-          title: payload.title,
-          startDate: payload.startDate,
-          endDate: payload.endDate,
-          status: payload.status,
-          link: payload.link,
-          createdAt: Timestamp.now()
-        };
-
-        setAvailabilityPolls((prev: any) => [optimisticPoll, ...prev]);
-        setChosenAvailabilityPoll(null);
-        handleClose(true);
+  
+      const ref = await createAvailabilityPoll(payload);
+  
+      if (!ref?.id) {
+        throw new Error("Poll creation failed");
       }
-
-      else
-        throw new Error("An error occurred");
+  
+      const optimisticPoll: AvailabilityPoll = {
+        id: ref.id,
+        title: payload.title,
+        startDate,
+        endDate,
+        status: payload.status,
+        createdAt,
+      };
+  
+      setAvailabilityPolls((prev: AvailabilityPoll[]) => [
+        optimisticPoll,
+        ...prev,
+      ]);
+  
+      setChosenAvailabilityPoll(null);
+      handleClose(true);
     } catch (error) {
-      console.error(error);
-      // optionally show toast / inline error
+      console.error("Poll submit failed:", error);
     }
   };
 

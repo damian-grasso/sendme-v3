@@ -8,7 +8,6 @@ export interface AvailabilityPoll {
     startDate: Timestamp;
     endDate: Timestamp;
     status: string;
-    link: string;
     createdAt: Timestamp;
 }
 
@@ -17,7 +16,6 @@ export interface CreateAvailabilityPoll {
     startDate: Timestamp;
     endDate: Timestamp;
     status: string;
-    link: string;
     createdAt: Timestamp;
 }
 
