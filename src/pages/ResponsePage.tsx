@@ -60,12 +60,12 @@ const ResponsePage = () => {
       if (!id) return;
       setLoading(true);
       try {
-        const invitees = await getInviteesByAvailabilityPoll(id);
+        const inviteesTemp = await getInviteesByAvailabilityPoll(id);
 
         console.log("INVITEES")
         console.log(invitees);
 
-        if (invitees.length > 0) setInvitees(invitees);
+        if (inviteesTemp.length > 0) setInvitees(inviteesTemp);
       } finally {
         setLoading(false);
       }
