@@ -13,7 +13,7 @@ export async function getAvailabilityPollById(id: string): Promise <Availability
     const snapshot: DocumentSnapshot = await getDoc(ref);
 
     if (snapshot.exists())
-      return { ...snapshot.data() } as AvailabilityPoll;
+      return { id: snapshot.id, ...snapshot.data() } as AvailabilityPoll;
     else
       throw new Error("Availability Poll object not found!");
   }

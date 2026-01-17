@@ -2,7 +2,7 @@ import { Badge, Button, Card } from "react-bootstrap";
 import type { AvailabilityPoll, UpdateAvailabilityPoll } from "../models/availability-poll";
 import type { Invitee } from "../models/invitee";
 import { FaBullhorn, FaEdit, FaShareAlt, FaTrash } from "react-icons/fa";
-import { updateAvailabilityPoll } from "../services/availability-poll-service";
+import { deleteAvailabilityPoll, updateAvailabilityPoll } from "../services/availability-poll-service";
 
 type AvailabilityPollCardProps = {
     poll: AvailabilityPoll,
@@ -23,6 +23,21 @@ const AvailabilityPollCard = ({ poll, invitees, setChosenAvailabilityPoll, setAv
             return "success";
         else
             return "secondary";
+    }
+
+    const onDeleteDraft = async () => {
+        try {
+            await deleteAvailabilityPoll(poll.id);
+
+            setAvailabilityPolls((prev: AvailabilityPoll[]) =>
+                prev.filter((p) => p.id !== poll.id)
+            );
+            
+            setNotificationMessage("Poll has been deleted");
+            setShowToast(true);
+        } catch (err) {
+          console.error("Failed to copy", err);
+        }
     }
 
     const copyLink = async () => {
@@ -92,8 +107,7 @@ const AvailabilityPollCard = ({ poll, invitees, setChosenAvailabilityPoll, setAv
                         <Button
                             variant="danger"
                             size="sm"
-                            //onClick={() => onDeleteDraft(poll)}
-                        >
+                            onClick={() => onDeleteDraft()} >
                             <FaTrash className="me-1" />
                         </Button>
                     )}
