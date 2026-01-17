@@ -7,14 +7,13 @@ import { deleteAvailabilityPoll, updateAvailabilityPoll } from "../services/avai
 type AvailabilityPollCardProps = {
     poll: AvailabilityPoll,
     invitees: Invitee[],
-    setChosenAvailabilityPoll: any,
+    chosenPoll: AvailabilityPoll | null,
+    setChosenPoll: any,
     setAvailabilityPolls: any,
-    setShowModal: any, 
-    setShowToast: any,
-    setNotificationMessage: any
+    setShowModal: any
 }
 
-const AvailabilityPollCard = ({ poll, invitees, setChosenAvailabilityPoll, setAvailabilityPolls, setShowModal, setShowToast, setNotificationMessage }: AvailabilityPollCardProps) => {  
+const AvailabilityPollCard = ({ poll, invitees, chosenPoll, setChosenPoll, setAvailabilityPolls, setShowModal }: AvailabilityPollCardProps) => {  
 
     const inviteesResponded = invitees?.filter((invitee: Invitee) => invitee.dateResponded != undefined).length;
 
@@ -30,11 +29,11 @@ const AvailabilityPollCard = ({ poll, invitees, setChosenAvailabilityPoll, setAv
             await deleteAvailabilityPoll(poll.id);
 
             setAvailabilityPolls((prev: AvailabilityPoll[]) =>
-                prev.filter((p) => p.id !== poll.id)
+                prev.filter((p) => p.id !== poll?.id)
             );
             
-            setNotificationMessage("Poll has been deleted");
-            setShowToast(true);
+            //setNotificationMessage("Poll has been deleted");
+            //setShowToast(true);
         } catch (err) {
           console.error("Failed to copy", err);
         }
@@ -43,8 +42,8 @@ const AvailabilityPollCard = ({ poll, invitees, setChosenAvailabilityPoll, setAv
     const copyLink = async () => {
         try {
           await navigator.clipboard.writeText(`${window.location.origin}/respond/${poll.id}/`);
-          setNotificationMessage("Link has been copied!");
-          setShowToast(true);
+          //setNotificationMessage("Link has been copied!");
+          //setShowToast(true);
         } catch (err) {
           console.error("Failed to copy", err);
         }
@@ -55,8 +54,7 @@ const AvailabilityPollCard = ({ poll, invitees, setChosenAvailabilityPoll, setAv
             const payload: UpdateAvailabilityPoll = {
                 id: poll.id,
                 title: poll.title,
-                startDate: poll.startDate,
-                endDate: poll.endDate,
+                dates: poll.dates,
                 status: "published"
             };
 
@@ -68,18 +66,17 @@ const AvailabilityPollCard = ({ poll, invitees, setChosenAvailabilityPoll, setAv
                     ? {
                         ...p,
                         title: payload.title,
-                        startDate: payload.startDate,
-                        endDate: payload.endDate,
+                        dates: payload.dates,
                         status: payload.status
                     } : 
                     p
                 )
             );
 
-            await navigator.clipboard.writeText(`${window.location.origin}/${poll.id}/respond/${poll.link}`);
+            await navigator.clipboard.writeText(`${window.location.origin}/${poll.id}/respond/`);
 
-            setNotificationMessage("Poll has been published, and the link has been copied!");
-            setShowToast(true);
+            //setNotificationMessage("Poll has been published, and the link has been copied!");
+            //setShowToast(true);
         } catch (err) {
           console.error("Failed to copy", err);
         }
@@ -115,7 +112,7 @@ const AvailabilityPollCard = ({ poll, invitees, setChosenAvailabilityPoll, setAv
                 </Card.Title>
                 <Card.Text>
                     <b>Poll Dates</b>
-                    <p>{poll.startDate.toDate().toLocaleDateString()} to {poll.endDate.toDate().toLocaleDateString()}</p>
+                    <p>{poll.dates?.join(", ")}</p>
                     {
                         (poll.status == "published" && invitees && invitees?.length > 0) && 
                             `Response Rate: ${ Number(inviteesResponded / invitees.length * 100).toFixed(1) }% responded (${inviteesResponded}/${invitees.length})`
@@ -131,7 +128,7 @@ const AvailabilityPollCard = ({ poll, invitees, setChosenAvailabilityPoll, setAv
                             </Button>
                             <Button variant="primary" onClick={ () => { 
                                 setShowModal(true)
-                                setChosenAvailabilityPoll(poll) 
+                                setChosenPoll(poll) 
                             }}>
                                 <FaEdit className="me-2" />
                                 Edit

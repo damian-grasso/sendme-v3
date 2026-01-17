@@ -1,107 +1,86 @@
 import { useEffect, useState } from "react";
-import { getAvailabilityPollsByAccount } from "../services/availability-poll-service";
-import type { AvailabilityPoll } from "../models/availability-poll";
-import AvailabilityPollCard from "../components/AvailabilityPollCard";
-import AddAvailabilityPollModal from "../components/AddAvailabilityPollCardModal";
-import { getInviteesByAvailabilityPollIds } from "../services/invitee-service";
-import type { Invitee } from "../models/invitee";
-import { Button, Toast, ToastContainer } from "react-bootstrap";
+import { Button, Col, Container, Row } from "react-bootstrap";
 import { FaPlus } from "react-icons/fa";
 
+import type { AvailabilityPoll } from "../models/availability-poll";
+import AvailabilityPollCard from "../components/AvailabilityPollCard";
+
+import { getAvailabilityPollsByAccount } from "../services/availability-poll-service";
+import AddAvailabilityPollModal from "../components/AddAvailabilityPollCardModal";
+
 const AvailabilityPollPage = () => {
+  
+  const [showModal, setShowModal] = useState(false);
 
-    const [chosenAvailabilityPoll, setChosenAvailabilityPoll] = useState({} as AvailabilityPoll | null);
-    const [availabilityPolls, setAvailabilityPolls] = useState([] as AvailabilityPoll[] | null);
-    const [invitees, setInvitees] = useState([] as Invitee[]);
+  const [chosenPoll, setChosenPoll] = useState(null);
+  const [polls, setPolls] = useState([] as AvailabilityPoll[])
 
-    const [showToast, setShowToast] = useState(false);
-    const [notificationMessage, setNotificationMessage] = useState("");
+  const fetchPolls = async () => {
 
-    const [showModal, setShowModal] = useState(false);
+    try {
+      const polls = await getAvailabilityPollsByAccount();
 
-    const handleClose = async () => {
-        setShowModal(false);
+      console.log("Polls")
+      console.log(polls);
+
+      if (polls.length > 0)
+        setPolls(polls);
     }
 
-    const fetchAvailabilityPolls = async () => {
-        const availabilityPolls = await getAvailabilityPollsByAccount();
-        
-        console.log(availabilityPolls)
-
-        if (availabilityPolls.length > 0)
-            setAvailabilityPolls(availabilityPolls);
+    catch (error) {
+      setPolls([]);
+      console.error(error);
     }
+  }
 
-    const fetchAvailabilityPollInvitees = async (availabilityPollIds: string[]) => {
-        const invitees = await getInviteesByAvailabilityPollIds(availabilityPollIds);
-        
-        console.log("INVITEES")
-        console.log(invitees)
+  useEffect(() => {
+    
+    fetchPolls();
+  }, []);
 
-        if (invitees.length > 0)
-            setInvitees(invitees);
-    }    
-
-    useEffect(() => {
-        fetchAvailabilityPolls();
-    }, []);
-
-    useEffect(() => {
-        if (availabilityPolls != null && availabilityPolls?.length > 0) {
-            const pollIds = availabilityPolls?.map((poll: AvailabilityPoll) => { return poll.id });
-
-            if (pollIds)
-                fetchAvailabilityPollInvitees(pollIds)
+  return (
+    <Container>
+      <Row>
+        {
+          (showModal) &&
+            <AddAvailabilityPollModal 
+              chosenPoll={chosenPoll}
+              showModal={showModal}
+              setShowModal={setShowModal}
+              setChosenPoll={setChosenPoll} 
+              setPolls={setPolls} />
         }
-    }, [availabilityPolls]);
-
-    return (
-        <>
-
-            <h1>Availability Polls</h1>
-            <Button variant="success" onClick={ () => setShowModal(true) }>
-                <FaPlus className="me-2" />
-                Add Availability Poll
+        <Col md={{ span: 8, offset: 2 }} className="mt-5">
+          <h1>Availability Polls</h1>
+          <hr/>
+          <div className="d-flex justify-content-end mb-4">
+            <Button 
+              variant="success btn-md" 
+              className="align-end" 
+              onClick={ () => { 
+                setShowModal(true)
+                setChosenPoll(null)
+              }}>
+              <FaPlus />&nbsp;&nbsp;Add Poll
             </Button>
-            <hr/>
-            {
-                (showModal) &&
-                    <AddAvailabilityPollModal
-                        chosenAvailabilityPoll={chosenAvailabilityPoll}
-                        handleClose={handleClose}
-                        showModal={showModal}
-                        setChosenAvailabilityPoll={setChosenAvailabilityPoll}
-                        setAvailabilityPolls={setAvailabilityPolls} />
-            }
-        
-            {
-                (availabilityPolls && availabilityPolls.length > 0) ? 
-                availabilityPolls?.map((poll: AvailabilityPoll) => {
-                    return <AvailabilityPollCard 
-                                key={poll.id}
-                                invitees={invitees}
-                                poll={poll || []}
-                                setShowModal={setShowModal}
-                                setChosenAvailabilityPoll={setChosenAvailabilityPoll}
-                                setAvailabilityPolls={setAvailabilityPolls}
-                                setShowToast={setShowToast}
-                                setNotificationMessage={setNotificationMessage} />
-                                
-                }) : <p>No polls have been created. Create a poll by clicking "Add Availability Poll".</p>
-            }
-            <ToastContainer
-                position="bottom-end"
-                className="p-3"
-                style={{ zIndex: 1055 }}>
-                <Toast show={showToast} bg="success" delay={2000} onClose={ () => setShowToast(false) } autohide>
-                    <Toast.Body className="text-white d-flex align-items-center">
-                        <i className="bi bi-check-circle me-2" />
-                        {notificationMessage}
-                    </Toast.Body>
-                </Toast>
-            </ToastContainer>
-        </>
-    );
+          </div>
+          {
+            (polls && polls.length > 0) ?
+              polls.map((poll: AvailabilityPoll) => 
+                <AvailabilityPollCard 
+                  poll={poll}
+                  invitees={[]}
+                  chosenPoll={chosenPoll}
+                  setChosenPoll={setChosenPoll} 
+                  setAvailabilityPolls={setPolls} 
+                  setShowModal={setShowModal} />
+              ) : 
+              <h5>No polls created. Click "Add Poll" to create your first poll.</h5>
+          }
+        </Col>
+      </Row>
+    </Container>
+  );
 };
 
 export default AvailabilityPollPage;

@@ -5,16 +5,14 @@ import type { Timestamp } from "firebase/firestore";
 export interface AvailabilityPoll {
     id: string;
     title: string;
-    startDate: Timestamp;
-    endDate: Timestamp;
+    dates: string[];
     status: string;
     createdAt: Timestamp;
 }
 
 export interface CreateAvailabilityPoll {
     title: string;
-    startDate: Timestamp;
-    endDate: Timestamp;
+    dates: string[];
     status: string;
     createdAt: Timestamp;
 }
@@ -22,7 +20,6 @@ export interface CreateAvailabilityPoll {
 export interface UpdateAvailabilityPoll {
     id: string;
     title: string;
-    startDate: Timestamp;
-    endDate: Timestamp;
+    dates: string[];
     status: string;
 }
