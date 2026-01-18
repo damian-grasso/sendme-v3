@@ -129,7 +129,7 @@ const AvailabilityPollPage = () => {
               accountId={trueAccountId} />
         }
         {
-          (viewResponsesModal) &&
+          (viewResponsesModal && chosenPoll) &&
             <ViewResponsesModal 
               showModal={viewResponsesModal}  
               chosenPoll={chosenPoll}

@@ -7,7 +7,7 @@ import type { AvailabilityBlock } from "../models/availability-block";
 
 type ViewResponsesModalProps = {
   showModal: boolean;
-  chosenPoll: AvailabilityPoll | null;
+  chosenPoll: AvailabilityPoll;
   chosenInvitees: Invitee[] | null;
   setChosenPoll: any;
   setShowModal: any;
@@ -15,7 +15,7 @@ type ViewResponsesModalProps = {
 
 const ViewResponsesModal = ({ showModal, chosenPoll, chosenInvitees, setChosenPoll, setShowModal }: ViewResponsesModalProps) => {
   
-  const [chosenDate, setChosenDate] = useState("All Dates");
+  const [chosenDate, setChosenDate] = useState(formatLocalDate(chosenPoll.dates[0]));
 
   function closeModal() {
     setShowModal(false);
@@ -48,7 +48,6 @@ const ViewResponsesModal = ({ showModal, chosenPoll, chosenInvitees, setChosenPo
           className="mb-3"
           value={chosenDate} 
           onChange={(e) => { setChosenDate(e.target.value) }}>
-          <option id="All Dates">All Dates</option>
           {
             (chosenPoll && chosenPoll.dates.length > 0) && 
               chosenPoll.dates.map((date: string) => 
