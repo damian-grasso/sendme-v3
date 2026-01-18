@@ -126,16 +126,16 @@ const AvailabilityPollCard = ({ poll, invitees, setChosenPoll, setAvailabilityPo
                 </Card.Title>
                 <Card.Text>
                     <b>Poll Dates</b>
-                    <p className="mb-0">{poll.dates.map((date: string) => formatLocalDate(date))?.join(", ")}</p>
+                    <p className="mb-2">{poll.dates.map((date: string) => formatLocalDate(date))?.join(", ")}</p>
                     {
                         (poll.status == "published") && 
                         <>
                             <b>Response Rate</b>
                             {
                                 (invitees?.length > 0) ?
-                                    <p>{ Number(inviteesResponded / invitees.length * 100).toFixed(1) }% responded ({inviteesResponded}/{invitees.length})</p> : 
-                                    <p>No invitees have responded yet</p>
-                            }                     
+                                    <p>{inviteesResponded} { (inviteesResponded == 1) ? "response" : "responses" }</p> : 
+                                    <p>No responses yet</p>
+                            }
                         </>
                     }
 
