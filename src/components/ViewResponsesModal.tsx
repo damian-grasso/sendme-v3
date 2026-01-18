@@ -3,6 +3,7 @@ import { Button, Form, FormSelect, Modal, Row } from "react-bootstrap";
 import type { AvailabilityPoll } from "../models/availability-poll";
 import type { Invitee } from "../models/invitee";
 import { useState } from "react";
+import type { AvailabilityBlock } from "../models/availability-block";
 
 type ViewResponsesModalProps = {
   showModal: boolean;
@@ -67,13 +68,18 @@ const ViewResponsesModal = ({ showModal, chosenPoll, chosenInvitees, setChosenPo
                     ? true
                     : formatLocalDate(block.day) === chosenDate
                 )
-                .map((block, blockIndex) => (
+                .map((block: AvailabilityBlock, blockIndex) => (
                   <div key={`${invitee.id}-${blockIndex}`}>
                     <p className="mb-1" style={{ fontSize: "16px" }}>
-                      <b>{formatLocalDate(block.day)}</b>
-                      &nbsp;|&nbsp;
-                      {block.startTime} - {block.endTime}
-                      {block.note !== "" && ` | "${block.note}"`}
+                      <b>{formatLocalDate(block.day)}</b>&nbsp;|&nbsp;
+                      {block.available ? (
+                        <>
+                          {block.startTime} - {block.endTime}
+                          {block.note !== "" && ` | "${block.note}"`}
+                        </>
+                        ) : (
+                        <em>Not available</em>
+                      )}
                     </p>
                   </div>
                 ))}
