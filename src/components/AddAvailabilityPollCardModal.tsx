@@ -22,6 +22,19 @@ const AddAvailabilityPollModal = ({ accountId, chosenPoll, showModal, setShowMod
   const [dateInput, setDateInput] = useState("");      // <- draft input
   const [dates, setDates] = useState<string[]>([]);    // <- selected list
 
+  function formatLocalDate(dateStr: string): string {
+    const [year, month, day] = dateStr.split("-").map(Number);
+  
+    // month is 0-based in JS Date
+    const date = new Date(year, month - 1, day);
+  
+    return date.toLocaleDateString("en-AU", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    });
+  }
+
   // optional: when editing an existing poll, preload values
   useEffect(() => {
     if (!showModal) return;
@@ -142,7 +155,7 @@ const AddAvailabilityPollModal = ({ accountId, chosenPoll, showModal, setShowMod
           dates.map((d) => (
             <Row key={d} className="mb-2">
               <Col className="d-flex align-items-center">
-                <span>{d}</span>
+                <span>{formatLocalDate(d)}</span>
                 <Button
                   variant="outline-danger"
                   size="sm"

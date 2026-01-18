@@ -15,6 +15,9 @@ const ResponsePage = () => {
   const [poll, setPoll] = useState<AvailabilityPoll | null>(null);
   const [responses, setResponses] = useState<Responses>({});
 
+  const [name, setName] = useState("");
+  const [nameError, setNameError] = useState(false);
+
   const [submitted, setSubmitted] = useState(false);
 
   type DayResponse = {
@@ -38,6 +41,11 @@ const ResponsePage = () => {
   }*/
 
   async function onSubmit(responses: Responses) {
+
+    if (!name.trim()) {
+      setNameError(true);
+      return;
+    }
 
     if (poll) {
       let blocks = [] as AvailabilityBlock[];
@@ -72,7 +80,7 @@ const ResponsePage = () => {
 
       const newInvitee = {
         availabilityPollId: id,
-        name: "",
+        name: name,
         availabilityBlocks: blocks,
         dateResponded: Timestamp.now()
       } as CreateInvitee;
@@ -84,6 +92,9 @@ const ResponsePage = () => {
 
       setSubmitted(true);
     }
+
+    else
+      return;
   }
 
   async function fetchPoll(id: string) {
@@ -139,6 +150,30 @@ const ResponsePage = () => {
             <>
               <div className="mb-4">
                 <h5 className="mb-4">Please let the organiser know what days you're available.</h5>
+
+                <div className="mb-4">
+                  <label className="form-label">
+                    Your name <span className="text-danger">*</span>
+                  </label>
+
+                  <input
+                    type="text"
+                    className={`form-control ${nameError ? "is-invalid" : ""}`}
+                    value={name}
+                    onChange={(e) => {
+                      setName(e.target.value);
+                      setNameError(false);
+                    }}
+                    placeholder="Enter your name"
+                  />
+
+                  {nameError && (
+                    <div className="invalid-feedback">
+                      Name is required
+                    </div>
+                  )}
+                </div>
+
                 {poll.dates.map((day: string) => (
                   <DateCard
                     key={day}
