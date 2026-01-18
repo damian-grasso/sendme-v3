@@ -4,5 +4,4 @@ export interface AvailabilityBlock {
     available: boolean;
     startTime: string;
     endTime: string;
-    note: string;
 }

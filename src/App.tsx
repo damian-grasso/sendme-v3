@@ -7,7 +7,7 @@ function App() {
   return (
     <Routes>
       <Route path="/" element={ <AvailabilityPollPage /> } />
-      <Route path="/respond/:availabilityPollId" element={ <ResponsePage /> } />
+      <Route path="/respond/:id" element={ <ResponsePage /> } />
 
       {/* Exception Routes */}
       <Route path="*" element={ <NoPage /> } />

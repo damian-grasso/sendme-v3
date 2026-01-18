@@ -75,7 +75,6 @@ const ViewResponsesModal = ({ showModal, chosenPoll, chosenInvitees, setChosenPo
                       {block.available ? (
                         <>
                           {block.startTime} - {block.endTime}
-                          {block.note !== "" && ` | "${block.note}"`}
                         </>
                         ) : (
                         <em>Not available</em>
