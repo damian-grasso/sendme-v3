@@ -23,21 +23,41 @@ const AvailabilityPollPage = () => {
   const [chosenPoll, setChosenPoll] = useState<AvailabilityPoll | null>(null);
   const chosenInvitees = (chosenPoll && invitees.length > 0) ? invitees.filter((invitee: Invitee) => invitee.availabilityPollId == chosenPoll.id) : [];
 
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const accountId = searchParams.get("accountId");
   const tempAccountId = crypto.randomUUID();
 
   const trueAccountId = (!accountId) ? tempAccountId : accountId;
 
   const copyAccountLink = async () => {
+    const link = window.location.href;
+  
     try {
-      await navigator.clipboard.writeText(`${window.location.origin}?accountId=${trueAccountId}`);
-      //setNotificationMessage("Link has been copied!");
-      //setShowToast(true);
-    } catch (err) {
-      console.error("Failed to copy", err);
+      await navigator.clipboard.writeText(link);
+    } catch {
+      fallbackCopy(link);
+      console.error("Failed!")
     }
-}
+  }
+  
+  function fallbackCopy(text: string) {
+    const textarea = document.createElement("textarea");
+    textarea.value = text;
+    textarea.style.position = "fixed";
+    textarea.style.opacity = "0";
+  
+    document.body.appendChild(textarea);
+    textarea.focus();
+    textarea.select();
+  
+    try {
+      document.execCommand("copy");
+    } catch (err) {
+      console.error("Fallback copy failed", err);
+    }
+  
+    document.body.removeChild(textarea);
+  }  
 
   const fetchPolls = async (accountId: string) => {
 
@@ -78,6 +98,12 @@ const AvailabilityPollPage = () => {
       console.error(error);
     }
   }
+
+  useEffect(() => {
+    if (!accountId) {
+      setSearchParams({ accountId: trueAccountId }, { replace: true });
+    }
+  }, [accountId, trueAccountId, setSearchParams]);
 
   useEffect(() => {
     
