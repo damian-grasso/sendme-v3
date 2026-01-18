@@ -132,7 +132,7 @@ const AvailabilityPollPage = () => {
               e.preventDefault();
               copyAccountLink();
             }}>
-            link
+            account link
           </a>{" "}
           to access your polls later!
         </h5>

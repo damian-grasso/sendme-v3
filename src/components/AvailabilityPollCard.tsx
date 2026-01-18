@@ -161,7 +161,7 @@ const AvailabilityPollCard = ({ poll, invitees, setChosenPoll, setAvailabilityPo
                         <>
                             <Button variant="success" className="me-2" onClick={copyLink}>
                                 <FaShareAlt className="me-2" />
-                                Copy Link
+                                Copy Poll Link
                             </Button>
                             <Button variant="primary" onClick={ () => { 
                                 setViewResponsesModal(true)
