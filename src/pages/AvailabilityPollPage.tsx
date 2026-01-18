@@ -10,6 +10,7 @@ import AddAvailabilityPollModal from "../components/AddAvailabilityPollCardModal
 import ViewResponsesModal from "../components/ViewResponsesModal";
 import { getInviteesByAvailabilityPollIds } from "../services/invitee-service";
 import type { Invitee } from "../models/invitee";
+import { useSearchParams } from "react-router-dom";
 
 const AvailabilityPollPage = () => {
   
@@ -22,10 +23,38 @@ const AvailabilityPollPage = () => {
   const [chosenPoll, setChosenPoll] = useState<AvailabilityPoll | null>(null);
   const chosenInvitees = (chosenPoll && invitees.length > 0) ? invitees.filter((invitee: Invitee) => invitee.availabilityPollId == chosenPoll.id) : [];
 
-  const fetchPolls = async () => {
+  const [searchParams] = useSearchParams();
+  const accountId = searchParams.get("accountId");
+  const tempAccountId = crypto.randomUUID();
+
+  const trueAccountId = (!accountId) ? tempAccountId : accountId;
+
+  console.log("ACCOUNT ID: ")
+  console.log(accountId)
+  console.log("TEMP ACCOUNT ID: ")
+  console.log(tempAccountId)
+  console.log("TA ID")
+  console.log(trueAccountId)
+
+  const copyAccountLink = async () => {
+    try {
+      await navigator.clipboard.writeText(`${window.location.origin}?accountId=${trueAccountId}`);
+      //setNotificationMessage("Link has been copied!");
+      //setShowToast(true);
+    } catch (err) {
+      console.error("Failed to copy", err);
+    }
+}
+
+  const fetchPolls = async (accountId: string) => {
+
+    if (accountId == "") {
+      setPolls([]);
+      return;
+    }
 
     try {
-      const polls = await getAvailabilityPollsByAccount();
+      const polls = await getAvailabilityPollsByAccount(accountId);
 
       console.log("Polls")
       console.log(polls);
@@ -67,8 +96,8 @@ const AvailabilityPollPage = () => {
 
   useEffect(() => {
     
-    fetchPolls();
-  }, []);
+    fetchPolls(accountId || "");
+  }, [accountId]);
 
   useEffect(() => {
     
@@ -85,7 +114,8 @@ const AvailabilityPollPage = () => {
               showModal={showModal}
               setShowModal={setShowModal}
               setChosenPoll={setChosenPoll} 
-              setPolls={setPolls} />
+              setPolls={setPolls}
+              accountId={trueAccountId} />
         }
         {
           (viewResponsesModal) &&
@@ -98,6 +128,7 @@ const AvailabilityPollPage = () => {
         }
         <Col md={{ span: 8, offset: 2 }} className="mt-5">
           <h1>Availability Polls</h1>
+          <h5>Like this app? Copy this <a href="#" onClick={ () => copyAccountLink() }>link</a> to save your polls for later!</h5>
           <hr/>
           <div className="d-flex justify-content-end mb-4">
             <Button 
@@ -116,8 +147,7 @@ const AvailabilityPollPage = () => {
                 <AvailabilityPollCard 
                   key={poll.id}
                   poll={poll}
-                  invitees={[]}
-                  chosenPoll={chosenPoll}
+                  invitees={invitees.filter((invitee: Invitee) => invitee.availabilityPollId == poll.id)}
                   setChosenPoll={setChosenPoll} 
                   setAvailabilityPolls={setPolls} 
                   setShowModal={setShowModal}

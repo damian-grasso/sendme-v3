@@ -8,6 +8,7 @@ import { createAvailabilityPoll, updateAvailabilityPoll } from "../services/avai
 import { FaPlus, FaSave, FaTimes } from "react-icons/fa";
 
 type AvailabilityPollCardProps = {
+  accountId: string;
   chosenPoll: AvailabilityPoll | null;
   showModal: boolean;
   setShowModal: any;
@@ -15,7 +16,7 @@ type AvailabilityPollCardProps = {
   setPolls: any;
 };
 
-const AddAvailabilityPollModal = ({ chosenPoll, showModal, setShowModal, setChosenPoll, setPolls }: AvailabilityPollCardProps) => {
+const AddAvailabilityPollModal = ({ accountId, chosenPoll, showModal, setShowModal, setChosenPoll, setPolls }: AvailabilityPollCardProps) => {
   
   const [title, setTitle] = useState("");
   const [dateInput, setDateInput] = useState("");      // <- draft input
@@ -91,7 +92,8 @@ const AddAvailabilityPollModal = ({ chosenPoll, showModal, setShowModal, setChos
         title: title.trim(),
         dates: dates,
         status: "draft",
-        createdAt: Timestamp.now()
+        createdAt: Timestamp.now(),
+        accountId: accountId
       } as CreateAvailabilityPoll;
 
       const newPoll = await createAvailabilityPoll(payload);

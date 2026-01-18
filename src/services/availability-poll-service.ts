@@ -1,5 +1,5 @@
 import { db } from '../config/firebase';
-import { collection, doc, getDoc, addDoc, updateDoc, DocumentReference, DocumentSnapshot, query, getDocs, deleteDoc } from "firebase/firestore";
+import { collection, doc, getDoc, addDoc, updateDoc, DocumentReference, DocumentSnapshot, query, getDocs, deleteDoc, where } from "firebase/firestore";
 import type { AvailabilityPoll, CreateAvailabilityPoll, UpdateAvailabilityPoll } from '../models/availability-poll';
 
 const AVAILABILITY_POLLS_COLLECTION_NAME = "availability_polls";
@@ -25,16 +25,19 @@ export async function getAvailabilityPollById(id: string): Promise <Availability
 }
 
 // In future, you should filter by accountId
-export async function getAvailabilityPollsByAccount(): Promise <AvailabilityPoll[]> {
+export async function getAvailabilityPollsByAccount(accountId: string): Promise <AvailabilityPoll[]> {
 
   try {
     console.log(`Attempting to retrieve Availability Polls...`);
 
     let polls: AvailabilityPoll[] = [] as AvailabilityPoll[];
 
+    console.log("AID")
+    console.log(accountId)
+
     const q = query(
       collection(db, AVAILABILITY_POLLS_COLLECTION_NAME),
-      //where("clubId", "==", clubId)
+      where("accountId", "==", accountId)
     );
     const snapshot: any = await getDocs(q);
 

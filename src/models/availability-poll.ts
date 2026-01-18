@@ -8,6 +8,7 @@ export interface AvailabilityPoll {
     dates: string[];
     status: string;
     createdAt: Timestamp;
+    accountId: string;
 }
 
 export interface CreateAvailabilityPoll {
@@ -15,6 +16,7 @@ export interface CreateAvailabilityPoll {
     dates: string[];
     status: string;
     createdAt: Timestamp;
+    accountId: string;
 }
 
 export interface UpdateAvailabilityPoll {

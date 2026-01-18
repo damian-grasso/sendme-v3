@@ -18,6 +18,19 @@ const AvailabilityPollCard = ({ poll, invitees, setChosenPoll, setAvailabilityPo
 
     const inviteesResponded = invitees?.filter((invitee: Invitee) => invitee.dateResponded != undefined).length;
 
+    function formatLocalDate(dateStr: string): string {
+        const [year, month, day] = dateStr.split("-").map(Number);
+      
+        // month is 0-based in JS Date
+        const date = new Date(year, month - 1, day);
+      
+        return date.toLocaleDateString("en-AU", {
+          year: "numeric",
+          month: "short",
+          day: "numeric",
+        });
+    }
+
     function getBadgeColour(status: string): string {
         if (status == "published")
             return "success";
@@ -113,10 +126,13 @@ const AvailabilityPollCard = ({ poll, invitees, setChosenPoll, setAvailabilityPo
                 </Card.Title>
                 <Card.Text>
                     <b>Poll Dates</b>
-                    <p>{poll.dates?.join(", ")}</p>
+                    <p className="mb-0">{poll.dates.map((date: string) => formatLocalDate(date))?.join(", ")}</p>
                     {
                         (poll.status == "published" && invitees && invitees?.length > 0) && 
-                            `Response Rate: ${ Number(inviteesResponded / invitees.length * 100).toFixed(1) }% responded (${inviteesResponded}/${invitees.length})`
+                        <>
+                            <b>Response Rate</b>
+                            <p>{ Number(inviteesResponded / invitees.length * 100).toFixed(1) }% responded ({inviteesResponded}/{invitees.length})</p>                        
+                        </>
                     }
 
                 <hr/>
