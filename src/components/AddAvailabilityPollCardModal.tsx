@@ -58,8 +58,6 @@ const AddAvailabilityPollModal = ({ accountId, chosenPoll, showModal, setShowMod
 
     if (chosenPoll) {
 
-      console.log("UPDATE")
-
       const payload = {
         id: chosenPoll.id,
         title: title,
@@ -86,8 +84,6 @@ const AddAvailabilityPollModal = ({ accountId, chosenPoll, showModal, setShowMod
 
     else {
 
-      console.log("CREATE");
-
       const payload = {
         title: title.trim(),
         dates: dates,
@@ -97,10 +93,6 @@ const AddAvailabilityPollModal = ({ accountId, chosenPoll, showModal, setShowMod
       } as CreateAvailabilityPoll;
 
       const newPoll = await createAvailabilityPoll(payload);
-
-
-      console.log("NEW POLL")
-      console.log(newPoll)
 
       setPolls((prev: any) => [...prev, newPoll]);
       setShowModal(false);

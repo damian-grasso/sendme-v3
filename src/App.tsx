@@ -6,11 +6,8 @@ import NoPage from "./pages/NoPage";
 function App() {
   return (
     <Routes>
-      {/* Private Routes */}
       <Route path="/" element={ <AvailabilityPollPage /> } />
-
-      {/* Public Routes */}
-      <Route path="/respond/:id" element={ <ResponsePage /> } />
+      <Route path="/respond/:availabilityPollId" element={ <ResponsePage /> } />
 
       {/* Exception Routes */}
       <Route path="*" element={ <NoPage /> } />

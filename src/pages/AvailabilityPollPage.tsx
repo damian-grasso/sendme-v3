@@ -29,13 +29,6 @@ const AvailabilityPollPage = () => {
 
   const trueAccountId = (!accountId) ? tempAccountId : accountId;
 
-  console.log("ACCOUNT ID: ")
-  console.log(accountId)
-  console.log("TEMP ACCOUNT ID: ")
-  console.log(tempAccountId)
-  console.log("TA ID")
-  console.log(trueAccountId)
-
   const copyAccountLink = async () => {
     try {
       await navigator.clipboard.writeText(`${window.location.origin}?accountId=${trueAccountId}`);
@@ -56,9 +49,6 @@ const AvailabilityPollPage = () => {
     try {
       const polls = await getAvailabilityPollsByAccount(accountId);
 
-      console.log("Polls")
-      console.log(polls);
-
       if (polls.length > 0)
         setPolls(polls);
     }
@@ -77,12 +67,7 @@ const AvailabilityPollPage = () => {
         (poll: AvailabilityPoll) => poll.id
       );
 
-      console.log(availabilityPollIds)
-
       const invitees = await getInviteesByAvailabilityPollIds(availabilityPollIds);
-
-      console.log("Invitees")
-      console.log(invitees);
 
       if (invitees.length > 0)
         setInvitees(invitees);
@@ -126,46 +111,54 @@ const AvailabilityPollPage = () => {
               setChosenPoll={setChosenPoll}
               setShowModal={setViewResponsesModal} />
         }
-        <Col md={{ span: 8, offset: 2 }} className="mt-5">
-          <h1>Availability Polls</h1>
-          <div className="d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between gap-2 mt-2">
+       <Col md={{ span: 8, offset: 2 }} className="mt-5">
+          
+        <div className="d-flex align-items-center justify-content-between mb-2">
+          <h1 className="mb-0">Availability Polls</h1>
+          <Button
+            variant="success"
+            onClick={() => {
+              setShowModal(true);
+              setChosenPoll(null);
+            }}>
+            <FaPlus />&nbsp;&nbsp;Add Poll
+          </Button>
+        </div>
+        <hr className="mt-3 mb-4" />
+        <h5 className="mt-2 mb-4">
+          Polls are free to create, but pricing might be added later. Copy this{" "}
+          <a href="#"
+            onClick={(e) => {
+              e.preventDefault();
+              copyAccountLink();
+            }}>
+            link
+          </a>{" "}
+          to access your polls later!
+        </h5>
+        {(!polls || polls.length === 0) && (
+          <div className="d-flex align-items-center justify-content-between">
             <h5 className="mb-0">
-              Like this app? Copy this{" "}
-              <a href="#"
-                onClick={(e) => {
-                  e.preventDefault();
-                  copyAccountLink();
-                }}>
-                link
-              </a>{" "}
-              to save your polls for later!
+              No polls created. Click "Add Poll" to create your first poll.
             </h5>
-            <Button
-              variant="success"
-              className="add-poll-btn"
-              onClick={() => {
-                setShowModal(true);
-                setChosenPoll(null);
-              }}>
-                <FaPlus />&nbsp;&nbsp;Add Poll
-            </Button>
           </div>
-          <hr className="mt-3 mb-4" />
-          {
-            (polls && polls.length > 0) ?
-              polls.map((poll: AvailabilityPoll) => 
-                <AvailabilityPollCard 
-                  key={poll.id}
-                  poll={poll}
-                  invitees={invitees.filter((invitee: Invitee) => invitee.availabilityPollId == poll.id)}
-                  setChosenPoll={setChosenPoll} 
-                  setAvailabilityPolls={setPolls} 
-                  setShowModal={setShowModal}
-                  setViewResponsesModal={setViewResponsesModal} />
-              ) : 
-              <h5>No polls created. Click "Add Poll" to create your first poll.</h5>
-          }
+        )}
+        {polls && polls.length > 0 &&
+          polls.map((poll: AvailabilityPoll) => (
+            <AvailabilityPollCard
+              key={poll.id}
+              poll={poll}
+              invitees={invitees.filter(
+                (invitee: Invitee) => invitee.availabilityPollId === poll.id
+              )}
+              setChosenPoll={setChosenPoll}
+              setAvailabilityPolls={setPolls}
+              setShowModal={setShowModal}
+              setViewResponsesModal={setViewResponsesModal}
+            />
+          ))}
         </Col>
+
       </Row>
     </Container>
   );
