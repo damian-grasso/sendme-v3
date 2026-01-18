@@ -128,19 +128,29 @@ const AvailabilityPollPage = () => {
         }
         <Col md={{ span: 8, offset: 2 }} className="mt-5">
           <h1>Availability Polls</h1>
-          <h5>Like this app? Copy this <a href="#" onClick={ () => copyAccountLink() }>link</a> to save your polls for later!</h5>
-          <hr/>
-          <div className="d-flex justify-content-end mb-4">
-            <Button 
-              variant="success btn-md" 
-              className="align-end" 
-              onClick={ () => { 
-                setShowModal(true)
-                setChosenPoll(null)
+          <div className="d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between gap-2 mt-2">
+            <h5 className="mb-0">
+              Like this app? Copy this{" "}
+              <a href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  copyAccountLink();
+                }}>
+                link
+              </a>{" "}
+              to save your polls for later!
+            </h5>
+            <Button
+              variant="success"
+              className="add-poll-btn"
+              onClick={() => {
+                setShowModal(true);
+                setChosenPoll(null);
               }}>
-              <FaPlus />&nbsp;&nbsp;Add Poll
+                <FaPlus />&nbsp;&nbsp;Add Poll
             </Button>
           </div>
+          <hr className="mt-3 mb-4" />
           {
             (polls && polls.length > 0) ?
               polls.map((poll: AvailabilityPoll) => 
