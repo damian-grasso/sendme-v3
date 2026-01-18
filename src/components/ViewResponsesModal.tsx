@@ -1,4 +1,4 @@
-import { Button, Form, FormSelect, Modal, Row } from "react-bootstrap";
+import { Button, Form, Modal } from "react-bootstrap";
 
 import type { AvailabilityPoll } from "../models/availability-poll";
 import type { Invitee } from "../models/invitee";

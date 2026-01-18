@@ -7,14 +7,14 @@ import { deleteAvailabilityPoll, updateAvailabilityPoll } from "../services/avai
 type AvailabilityPollCardProps = {
     poll: AvailabilityPoll,
     invitees: Invitee[],
-    chosenPoll: AvailabilityPoll | null,
+    //chosenPoll: AvailabilityPoll | null,
     setChosenPoll: any,
     setAvailabilityPolls: any,
     setShowModal: any,
     setViewResponsesModal: any
 }
 
-const AvailabilityPollCard = ({ poll, invitees, chosenPoll, setChosenPoll, setAvailabilityPolls, setShowModal, setViewResponsesModal }: AvailabilityPollCardProps) => {  
+const AvailabilityPollCard = ({ poll, invitees, setChosenPoll, setAvailabilityPolls, setShowModal, setViewResponsesModal }: AvailabilityPollCardProps) => {  
 
     const inviteesResponded = invitees?.filter((invitee: Invitee) => invitee.dateResponded != undefined).length;
 
